@@ -348,7 +348,6 @@ function raycast(context) {
     var arrT = []
     var w = context.canvas.width;
     var h = context.canvas.height;
-    var count = 0;
     var c = new Color(0,0,0,0);
     var imagedata = context.createImageData(w,h);
     if (inputTriangles != null) {
@@ -370,7 +369,6 @@ function raycast(context) {
             arrT.push({vA: vertexA, vB: vertexB, vC: vertexC, vectorAB: vAB, vectorAC: vAC, vectorBC: vBC, vectorCA: vCA, ambient: ambient, diffuse: diffuse, specular: specular, n: nT});
           }
       }
-      //debugger;
       var eye = [0.5,0.5,-0.5];
       var ul = [0,1,0];
       var ur = [1,1,0];
@@ -378,9 +376,6 @@ function raycast(context) {
       var lr = [1,0,0];
       for (var x = 0; x < w; x++) {
         for (var y = 0; y < h; y++ ) {
-          if (x == 175 && y == 296) {
-            //debugger;
-          }
           var t = x / w;
           var s = y / h;
           var pL = math.add(ul, (math.multiply(s, (math.subtract(ll, ul)))));
@@ -395,7 +390,6 @@ function raycast(context) {
             triangleN = math.divide(triangleN, math.norm(triangleN));
             var DN = math.dot(rayD, triangleN);
             if (DN != 0) {
-              //debugger;
               var d = math.dot(triangleN, arrT[i].vA);
               var tDis = math.divide((math.subtract(d, math.dot(triangleN, eye))), DN);
               if (tDis >= 1 && (closeTri == null || tDis <= closeTri)) {
@@ -434,7 +428,7 @@ function raycast(context) {
                   );
                     
                   drawPixel(imagedata,x,y,c);
-                  count++;
+                  
                 }
               }
             }
