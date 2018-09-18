@@ -370,6 +370,7 @@ function raycast(context) {
           }
       }
       var eye = [0.5,0.5,-0.5];
+      var light = [-3,1,-0.5];
       var ul = [0,1,0];
       var ur = [1,1,0];
       var ll = [0,0,0];
@@ -382,10 +383,10 @@ function raycast(context) {
           var pR = math.add(ur, (math.multiply(s, (math.subtract(lr, ur)))));
           var p =  math.add(pL, (math.multiply(t, (math.subtract(pR, pL)))));
           var R =  math.add(eye, (math.multiply(t, (math.subtract(p, eye)))));
+          var rayD = math.subtract(p, eye);
+          rayD = math.divide(rayD, math.norm(rayD));
           for (var i = 0; i < arrT.length; i++) {
             var closeTri = null;
-            var rayD = math.subtract(p, eye);
-            rayD = math.divide(rayD, math.norm(rayD));
             var triangleN = math.cross(arrT[i].vectorAB, arrT[i].vectorAC);
             triangleN = math.divide(triangleN, math.norm(triangleN));
             var DN = math.dot(rayD, triangleN);
@@ -414,21 +415,24 @@ function raycast(context) {
                 if (SB >= 0) {
                   Bpos = 1;
                 }
-                var SC = math.dot(triangleN, crossSC);
-                if (SC >= 0) {
-                  Cpos = 1;
-                }
-                if ((Apos == 1 && Bpos == 1 && Cpos == 1) || (Apos == 0 && Bpos == 0 && Cpos == 0)) {
-                  //debugger;
-                  c.change(
-                    arrT[i].diffuse[0]*255,
-                    arrT[i].diffuse[1]*255,
-                    arrT[i].diffuse[2]*255,
-                    255
-                  );
+                if ((Apos == 1 && Bpos == 1) || (Apos == 0 && Bpos == 0)) {
+                
+                  var SC = math.dot(triangleN, crossSC);
+                  if (SC >= 0) {
+                    Cpos = 1;
+                  }
+                  if ((Apos == 1 && Bpos == 1 && Cpos == 1) || (Apos == 0 && Bpos == 0 && Cpos == 0)) {
+                    //debugger;
+                    c.change(
+                      arrT[i].diffuse[0]*255,
+                      arrT[i].diffuse[1]*255,
+                      arrT[i].diffuse[2]*255,
+                      255
+                    );
+                      
+                    drawPixel(imagedata,x,y,c);
                     
-                  drawPixel(imagedata,x,y,c);
-                  
+                  }
                 }
               }
             }
