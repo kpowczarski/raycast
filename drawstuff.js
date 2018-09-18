@@ -343,6 +343,109 @@ function drawInputTrainglesUsingPaths(context) {
     } // end if triangle files found
 } // end draw input triangles
 
+function raycast(context) {
+    var inputTriangles = getInputTriangles();
+    var arrT = []
+    var w = context.canvas.width;
+    var h = context.canvas.height;
+    var count = 0;
+    var c = new Color(0,0,0,0);
+    var imagedata = context.createImageData(w,h);
+    if (inputTriangles != null) {
+      var n = inputTriangles.length;
+      for (var f=0; f<n; f++) {
+        	var tn = inputTriangles[f].triangles.length;
+        	for(var t=0; t<tn; t++){
+            var vertexA = inputTriangles[f].vertices[inputTriangles[f].triangles[t][0]];
+        		var vertexB = inputTriangles[f].vertices[inputTriangles[f].triangles[t][1]];
+        		var vertexC = inputTriangles[f].vertices[inputTriangles[f].triangles[t][2]];
+            var vAB = math.subtract(vertexB, vertexA);
+            var vAC = math.subtract(vertexC, vertexA);
+            var vBC = math.subtract(vertexC, vertexB);
+            var vCA = math.subtract(vertexA, vertexC);
+            var ambient = inputTriangles[f].material.ambient;
+            var diffuse = inputTriangles[f].material.diffuse;
+            var specular = inputTriangles[f].material.specular;
+            var nT = inputTriangles[f].material.n;
+            arrT.push({vA: vertexA, vB: vertexB, vC: vertexC, vectorAB: vAB, vectorAC: vAC, vectorBC: vBC, vectorCA: vCA, ambient: ambient, diffuse: diffuse, specular: specular, n: nT});
+          }
+      }
+      //debugger;
+      var eye = [0.5,0.5,-0.5];
+      var ul = [0,1,0];
+      var ur = [1,1,0];
+      var ll = [0,0,0];
+      var lr = [1,0,0];
+      for (var x = 0; x < w; x++) {
+        for (var y = 0; y < h; y++ ) {
+          if (x == 175 && y == 296) {
+            //debugger;
+          }
+          var t = x / w;
+          var s = y / h;
+          var pL = math.add(ul, (math.multiply(s, (math.subtract(ll, ul)))));
+          var pR = math.add(ur, (math.multiply(s, (math.subtract(lr, ur)))));
+          var p =  math.add(pL, (math.multiply(t, (math.subtract(pR, pL)))));
+          var R =  math.add(eye, (math.multiply(t, (math.subtract(p, eye)))));
+          for (var i = 0; i < arrT.length; i++) {
+            var closeTri = null;
+            var rayD = math.subtract(p, eye);
+            rayD = math.divide(rayD, math.norm(rayD));
+            var triangleN = math.cross(arrT[i].vectorAB, arrT[i].vectorAC);
+            triangleN = math.divide(triangleN, math.norm(triangleN));
+            var DN = math.dot(rayD, triangleN);
+            if (DN != 0) {
+              //debugger;
+              var d = math.dot(triangleN, arrT[i].vA);
+              var tDis = math.divide((math.subtract(d, math.dot(triangleN, eye))), DN);
+              if (tDis >= 1 && (closeTri == null || tDis <= closeTri)) {
+                var intersection = math.add(eye, math.multiply(rayD, tDis));
+                var ai = math.subtract(intersection, arrT[i].vA);
+                ai = math.divide(ai, math.norm(ai));
+                var bi = math.subtract(intersection, arrT[i].vB);
+                bi = math.divide(bi, math.norm(bi));
+                var ci = math.subtract(intersection, arrT[i].vC);
+                ci = math.divide(ci, math.norm(ci));
+                var crossSA = math.cross(arrT[i].vectorAB, ai);
+                var crossSB = math.cross(arrT[i].vectorBC, bi);
+                var crossSC = math.cross(arrT[i].vectorCA, ci);
+                var Apos = 0;
+                var Bpos = 0;
+                var Cpos = 0;
+                var SA = math.dot(triangleN, crossSA);
+                if (SA >= 0) {
+                  Apos = 1;
+                }
+                var SB = math.dot(triangleN, crossSB);
+                if (SB >= 0) {
+                  Bpos = 1;
+                }
+                var SC = math.dot(triangleN, crossSC);
+                if (SC >= 0) {
+                  Cpos = 1;
+                }
+                if ((Apos == 1 && Bpos == 1 && Cpos == 1) || (Apos == 0 && Bpos == 0 && Cpos == 0)) {
+                  //debugger;
+                  c.change(
+                    arrT[i].diffuse[0]*255,
+                    arrT[i].diffuse[1]*255,
+                    arrT[i].diffuse[2]*255,
+                    255
+                  );
+                    
+                  drawPixel(imagedata,x,y,c);
+                  count++;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    context.putImageData(imagedata, 0, 0);
+
+}
+
 
 /* main -- here is where execution begins after window load */
 
@@ -365,6 +468,7 @@ function main() {
     //drawRandPixelsInInputTriangles(context);
     // shows how to draw pixels and read input file
     
-    drawInputTrainglesUsingPaths(context);
+    //drawInputTrainglesUsingPaths(context);
     // shows how to read input file, but not how to draw pixels
+    raycast(context);
 }
