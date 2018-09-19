@@ -371,6 +371,7 @@ function raycast(context) {
       }
       var eye = [0.5,0.5,-0.5];
       var light = [-3,1,-0.5];
+      var lightADS = 1;
       var ul = [0,1,0];
       var ur = [1,1,0];
       var ll = [0,0,0];
@@ -423,12 +424,26 @@ function raycast(context) {
                   }
                   if ((Apos == 1 && Bpos == 1 && Cpos == 1) || (Apos == 0 && Bpos == 0 && Cpos == 0)) {
                     //debugger;
-                    c.change(
-                      arrT[i].diffuse[0]*255,
-                      arrT[i].diffuse[1]*255,
-                      arrT[i].diffuse[2]*255,
-                      255
-                    );
+                    var a0 = arrT[i].ambient[0];
+                    var a1 = arrT[i].ambient[1];
+                    var a2 = arrT[i].ambient[2];
+                    var d0 = arrT[i].diffuse[0];
+                    var d1 = arrT[i].diffuse[1];
+                    var d2 = arrT[i].diffuse[2];
+                    var s0 = arrT[i].specular[0];
+                    var s1 = arrT[i].specular[1];
+                    var s2 = arrT[i].specular[2];
+                    var nCoh = arrT[i].n;
+                    var lightVector = math.subtract(light, intersection);
+                    lightVector = math.divide(lightVector, math.norm(lightVector));
+                    var v = math.subtract(eye, intersection);
+                    v = math.divide(v, math.norm(v));
+                    var hLight = math.divide(math.add(v, lightVector), math.add(math.norm(v), math.norm(lightVector)));
+                    hLight = math.divide(hLight, math.norm(hLight));
+                    var first = math.add(math.add(a0, math.multiply(d0, math.multiply(triangleN, lightVector))), math.multiply(s0, math.pow(math.multiply(triangleN, hLight), nCoh)));
+                    var sec = math.add(math.add(a1, math.multiply(d1, math.multiply(triangleN, lightVector))), math.multiply(s1, math.pow(math.multiply(triangleN, hLight), nCoh)));
+                    var third = math.add(math.add(a2, math.multiply(d2, math.multiply(triangleN, lightVector))), math.multiply(s2, math.pow(math.multiply(triangleN, hLight), nCoh)));
+                    c.change(first*255, sec*255, third*255, 255);
                       
                     drawPixel(imagedata,x,y,c);
                     
