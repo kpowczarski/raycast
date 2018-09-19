@@ -343,6 +343,8 @@ function drawInputTrainglesUsingPaths(context) {
     } // end if triangle files found
 } // end draw input triangles
 
+//Function to draw each pixel with raycasting
+//Written by: Kevin Owczarski
 function raycast(context) {
     var inputTriangles = getInputTriangles();
     var arrT = []
@@ -468,20 +470,5 @@ function main() {
     var canvas = document.getElementById("viewport"); 
     var context = canvas.getContext("2d");
  
-    // Create the image
-    //drawRandPixels(context);
-      // shows how to draw pixels
-    
-    //drawRandPixelsInInputEllipsoids(context);
-      // shows how to draw pixels and read input file
-      
-    //drawInputEllipsoidsUsingArcs(context);
-      // shows how to read input file, but not how to draw pixels
-    
-    //drawRandPixelsInInputTriangles(context);
-    // shows how to draw pixels and read input file
-    
-    //drawInputTrainglesUsingPaths(context);
-    // shows how to read input file, but not how to draw pixels
     raycast(context);
 }
