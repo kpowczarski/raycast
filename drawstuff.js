@@ -425,7 +425,6 @@ function raycast(context) {
                     Cpos = 1;
                   }
                   if ((Apos == 1 && Bpos == 1 && Cpos == 1) || (Apos == 0 && Bpos == 0 && Cpos == 0)) {
-                    //debugger;
                     var a0 = arrT[i].ambient[0];
                     var a1 = arrT[i].ambient[1];
                     var a2 = arrT[i].ambient[2];
